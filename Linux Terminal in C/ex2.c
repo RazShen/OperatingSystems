@@ -114,6 +114,8 @@ int main() {
                         getcwd(currectPlace, sizeof(currectPlace));
                         chdir(lastCd);
                         strcpy(lastCd, currectPlace);
+                        getcwd(currectPlace, sizeof(currectPlace));
+                        printf("%s\n", currectPlace);
                     }
                 } else {
                     char *cd = (char *) calloc(strlen(argv[1]) + 1, sizeof(char));
