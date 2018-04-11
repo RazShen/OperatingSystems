@@ -96,12 +96,12 @@ int main() {
         } else {
             if (strcmp(argv[0], "cd") == 0) {
                 if (argv[1] == NULL) {
-                    getcwd(lastCd, sizeof(lastCd));
+                    getcwd(lastCd, MAXLEN);
                     chdir(getenv("HOME"));
                     changedCd = 1;
                     printf("%d\n", getpid());
                 } else if (strcmp(argv[1], "~") == 0) {
-                    getcwd(lastCd, sizeof(lastCd));
+                    getcwd(lastCd, MAXLEN);
                     chdir(getenv("HOME"));
                     changedCd = 1;
                     printf("%d\n", getpid());
@@ -111,16 +111,16 @@ int main() {
                         printf("bash: cd: OLDPWD not set\n");
                     } else {
                         char currectPlace[1024];
-                        getcwd(currectPlace, sizeof(currectPlace));
+                        getcwd(currectPlace, MAXLEN);
                         chdir(lastCd);
                         strcpy(lastCd, currectPlace);
-                        getcwd(currectPlace, sizeof(currectPlace));
+                        getcwd(currectPlace, MAXLEN);
                         printf("%s\n", currectPlace);
                     }
                 } else {
                     char *cd = (char *) calloc(strlen(argv[1]) + 1, sizeof(char));
                     strcpy(cd, argv[1]);
-                    getcwd(lastCd, sizeof(lastCd));
+                    getcwd(lastCd, MAXLEN);
                     chdir(cd);
                     free(cd);
                     changedCd = 1;
