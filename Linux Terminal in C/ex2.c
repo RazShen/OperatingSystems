@@ -139,7 +139,7 @@ int main() {
                     // We are in the father's process
                     printf("%d\n", pid);
                     if (!isBackGround) {
-                        wait(NULL);
+                        waitpid(pid, NULL, 0);
                     } else {
                         addJobToEndOfList(head, nameJob, pid);
                     }
