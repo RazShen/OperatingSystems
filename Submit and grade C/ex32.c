@@ -173,6 +173,9 @@ int scanRunAndWrite(DIR *students, char *searchPath, char *input, char *correctO
                 strcpy(argv[0], "gcc");
                 strcpy(argv[1], resultPath);
                 argv[2] = NULL;
+                if (checkIfFileCreated("a.out")) {
+                    unlink("a.out");
+                }
                 pid_t pid = fork();
                 if (pid == -1) {
                     writeErrorToStderr();
@@ -180,8 +183,7 @@ int scanRunAndWrite(DIR *students, char *searchPath, char *input, char *correctO
                     // We are in the father's process
                     int status = 0;
                     waitpid(pid, &status, 0);
-                    int aout = checkIfFileCreated("a.out");
-                    if (aout) {
+                    if (checkIfFileCreated("a.out")) {
                         // run comparison and stuff
                         int finalRes = compareFiles(input, correctOutputPath);
                         if (finalRes == -1) {
