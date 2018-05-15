@@ -27,10 +27,10 @@ int fillPaths(int fd, char *path);
 
 /**
  * This method will scan will run from the mail and will operate all the other function in order to
- * scan the folders for c files, run the a.out and write to results.csv.
+ * scan the folders for c files, run the newa.out and write to results.csv.
  * @param students main dir of the c projects.
  * @param searchPath the path of the students dir
- * @param input input to a.out
+ * @param input input to newa.out
  * @param correctOutputPath currect output
  * @param resultFD filedescriptor of result.csv
  * @return int.
@@ -53,7 +53,7 @@ int searchRecursivelyForFile(char *path, char *finalPath);
 int checkIfFileCreated(char *fileName);
 
 /**
- * Run the a.out and comp.out and compare output to the correctoutput.
+ * Run the newa.out and comp.out and compare output to the correctoutput.
  * @param inputPath for the input.
  * @param correctOutPath correct output.
  * @return compare result.
@@ -102,7 +102,7 @@ int main(int argc, char *args[]) {
     }
 
     // Open the results.csv file
-    int resultFD = open("results.csv", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    int resultFD = open("results.csv", O_CREAT | O_TRUNC | O_WRONLY, 0644);
     if (resultFD == -1) {
         writeErrorToStderr();
     }
@@ -170,12 +170,14 @@ int scanRunAndWrite(DIR *students, char *searchPath, char *input, char *correctO
                 char *argv[EXECVPLEN];
                 argv[0] = calloc(BUFFSIZE, sizeof(char));
                 argv[1] = calloc(BUFFSIZE, sizeof(char));
+                argv[2] = calloc(BUFFSIZE, sizeof(char));
+                argv[3] = calloc(BUFFSIZE, sizeof(char));
+
                 strcpy(argv[0], "gcc");
-                strcpy(argv[1], resultPath);
-                argv[2] = NULL;
-                if (checkIfFileCreated("a.out")) {
-                    unlink("a.out");
-                }
+                strcpy(argv[1], "-o");
+                strcpy(argv[2], "newa.out");
+                strcpy(argv[3], resultPath);
+                argv[4] = NULL;
                 pid_t pid = fork();
                 if (pid == -1) {
                     writeErrorToStderr();
@@ -183,7 +185,7 @@ int scanRunAndWrite(DIR *students, char *searchPath, char *input, char *correctO
                     // We are in the father's process
                     int status = 0;
                     waitpid(pid, &status, 0);
-                    if (checkIfFileCreated("a.out")) {
+                    if (checkIfFileCreated("newa.out")) {
                         // run comparison and stuff
                         int finalRes = compareFiles(input, correctOutputPath);
                         if (finalRes == -1) {
@@ -215,7 +217,7 @@ int scanRunAndWrite(DIR *students, char *searchPath, char *input, char *correctO
                                 writeErrorToStderr();
                             }
                         }
-                        if (unlink("a.out") == -1) {
+                        if (unlink("newa.out") == -1) {
                             writeErrorToStderr();
                         }
                     } else {
@@ -308,7 +310,7 @@ int checkIfFileCreated(char *fileName) {
 }
 
 int compareFiles(char *inputPath, char *correctOutPath) {
-    // first run the a.out with the input path argument, need to switch the stdin to be inputPath
+    // first run the newa.out the input path argument, need to switch the stdin to be inputPath
     // need to switch the output path to the stdout, then we can compare the output file to the correct output.
     int outputFD, inputFD;
     // open the output file (will be user of out)
@@ -327,8 +329,8 @@ int compareFiles(char *inputPath, char *correctOutPath) {
     dup2(inputFD, STDIN_FILENO);
     char *argv[EXECVPLEN];
     argv[0] = calloc(BUFFSIZE, sizeof(char));
-    // the a.out will use the inputFD as stdin
-    strcpy(argv[0], "./a.out");
+    // the newa.out will use the inputFD as stdin
+    strcpy(argv[0], "./newa.out");
     argv[1] = NULL;
     pid_t pid = fork();
     if (pid == -1) {
